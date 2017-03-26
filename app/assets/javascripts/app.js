@@ -13,6 +13,11 @@ myApp.config(function ($routeProvider){
     templateUrl: "/assets/angular/views/forecast.htm",
     controller: "forecastController"
   })
+
+  .when("/forecast/:days", {
+    templateUrl: "/assets/angular/views/forecast.htm",
+    controller: "forecastController"
+  })
 });
 
 // controllers
@@ -24,9 +29,20 @@ myApp.controller('mainController', ['$scope', 'cityFinder', function($scope, cit
   });
 }]);
 
-myApp.controller('forecastController', ['$scope', 'cityFinder', function($scope, cityFinder){
+myApp.controller('forecastController', ['$scope', '$resource', '$routeParams', 'cityFinder', function($scope, $resource, $routeParams, cityFinder){
   $scope.city = cityFinder.city;
-  
+  $scope.days = $routeParams.days || 2;
+
+  $scope.weatherAPI = $resource("http://api.openweathermap.org/data/2.5/forecast/daily?APPID=351f3fe1c21d085f91f5108c39b28909", { callback: "JSON_CALLBACK" }, { get: { method: "JSONP" }});
+  $scope.weatherResult = $scope.weatherAPI.get({ q: $scope.city, cnt: $scope.days });
+
+  $scope.convertToFahrenheit = function(degK) {
+    return Math.round((1.8 * (degK - 273)) + 32);
+  }
+
+  $scope.convertToDate = function(dt) {
+    return new Date(dt * 1000);
+  };
   $scope.$watch('city', function(){
   cityFinder.city = $scope.city;
   });
@@ -34,5 +50,6 @@ myApp.controller('forecastController', ['$scope', 'cityFinder', function($scope,
 
 // services
 myApp.service('cityFinder', function(){
-  this.city = "Chicago";
+  this.city = "Chicago, IL";
 });
+
