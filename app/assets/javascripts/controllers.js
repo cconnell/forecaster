@@ -1,15 +1,20 @@
 // controllers
-myApp.controller('mainController', ['$scope', 'cityFinder', function($scope, cityFinder){
+myApp.controller('mainController', ['$scope', '$location','cityFinder', function($scope, $location, cityFinder){
   $scope.city = cityFinder.city;
 
   $scope.$watch('city', function(){
-  cityFinder.city = $scope.city;
+    cityFinder.city = $scope.city;
   });
+  
+  $scope.submit = function(){
+    $location.path("/forecast");
+  };
+
 }]);
 
 myApp.controller('forecastController', ['$scope', '$resource', '$routeParams', 'cityFinder', function($scope, $resource, $routeParams, cityFinder){
-  $scope.city = cityFinder.city;
-  $scope.days = $routeParams.days || '2';
+    $scope.city = cityFinder.city;
+    $scope.days = $routeParams.days || '2';
 
   $scope.weatherAPI = $resource("http://api.openweathermap.org/data/2.5/forecast/daily?APPID=351f3fe1c21d085f91f5108c39b28909", { callback: "JSON_CALLBACK" }, { get: { method: "JSONP" }});
   $scope.weatherResult = $scope.weatherAPI.get({ q: $scope.city, cnt: $scope.days });
@@ -22,6 +27,6 @@ myApp.controller('forecastController', ['$scope', '$resource', '$routeParams', '
     return new Date(dt * 1000);
   };
   $scope.$watch('city', function(){
-  cityFinder.city = $scope.city;
+    cityFinder.city = $scope.city;
   });
 }]);
