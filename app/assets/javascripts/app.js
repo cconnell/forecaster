@@ -16,13 +16,23 @@ myApp.config(function ($routeProvider){
 });
 
 // controllers
-myApp.controller('mainController', ['$scope', function($scope){
-  // console.log("first");
+myApp.controller('mainController', ['$scope', 'cityFinder', function($scope, cityFinder){
+  $scope.city = cityFinder.city;
+
+  $scope.$watch('city', function(){
+  cityFinder.city = $scope.city;
+  });
 }]);
 
-myApp.controller('forecastController', ['$scope', function($scope){
-  // console.log("second");
-
+myApp.controller('forecastController', ['$scope', 'cityFinder', function($scope, cityFinder){
+  $scope.city = cityFinder.city;
+  
+  $scope.$watch('city', function(){
+  cityFinder.city = $scope.city;
+  });
 }]);
 
-
+// services
+myApp.service('cityFinder', function(){
+  this.city = "Chicago";
+});
